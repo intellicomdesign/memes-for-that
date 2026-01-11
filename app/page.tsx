@@ -1,65 +1,127 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from 'react';
 
 export default function Home() {
+  const [prompt, setPrompt] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const generateMeme = async () => {
+    if (!prompt) {
+      setError('Enter a prompt!');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setImageUrl('');
+
+    try {
+      const res = await fetch('/api/generate-meme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+      } else {
+        setError(data.error || 'Something went wrong');
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error 
+        ? err.message 
+        : 'error occured, you broke it retard';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div style={{ 
+      textAlign: 'center', 
+      padding: '40px 20px', 
+      background: '#f9fafb', 
+      minHeight: '100vh',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      <h1 style={{ color: '#1a1a1a', fontSize: '2.5rem', marginBottom: '10px' }}>
+        The Golden Age of Memes
+      </h1>
+      <p style={{ fontSize: '1.2rem', color: '#555', marginBottom: '30px' }}>
+        Generate a meme with Grok-powered AI!
+      </p>
+
+      <input
+        type="text"
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="e.g., Cat judge ruling on fraud case"
+        style={{
+          width: '90%',
+          maxWidth: '600px',
+          padding: '15px',
+          fontSize: '1.1rem',
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          marginBottom: '20px',
+          boxSizing: 'border-box'
+        }}
+      />
+
+      <br />
+
+      <button
+        onClick={generateMeme}
+        disabled={loading}
+        style={{
+          padding: '15px 30px',
+          background: loading ? '#aaa' : '#0070f3',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          fontSize: '1.1rem',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+        }}
+      >
+        {loading ? 'Generating...' : 'Generate Meme'}
+      </button>
+
+      {loading && (
+        <p style={{ color: '#666', marginTop: '15px' }}>
+          Takes 10-30 seconds...
+        </p>
+      )}
+
+      {error && (
+        <p style={{ 
+          color: 'red', 
+          marginTop: '15px', 
+          fontWeight: 'bold',
+          fontSize: '1.1rem'
+        }}>
+          {error}
+        </p>
+      )}
+
+      {imageUrl && (
+        <div style={{ marginTop: '40px' }}>
+          <img
+            src={imageUrl}
+            alt="Generated Meme"
+            style={{
+              maxWidth: '100%',
+              borderRadius: '16px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.15)'
+            }}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      )}
     </div>
   );
 }

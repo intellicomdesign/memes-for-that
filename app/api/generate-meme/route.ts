@@ -8,14 +8,19 @@ export async function POST(request: Request) {
   }
 
   try {
+    const apiKey = process.env.XAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('Missing XAI_API_KEY environment variable');
+    }
+
     const response = await fetch('https://api.x.ai/v1/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.XAI_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'flux',
+        model: 'grok-2-image',  // Correct model name for xAI image gen
         prompt: prompt + ' in a funny viral meme style with bold text overlay',
         n: 1,
         size: '1024x1024'
@@ -23,7 +28,8 @@ export async function POST(request: Request) {
     });
 
     if (!response.ok) {
-      throw new Error('API error: ' + response.statusText);
+      const errorText = await response.text(); // Get raw error from xAI
+      throw new Error(`xAI API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
@@ -31,7 +37,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ imageUrl });
   } catch (error: any) {
-    const errorMessage = error instanceof Error ? error.message : 'error occured, you broke it retard';
+    console.error('API route error:', error); // Logs to Vercel Runtime Logs
+    const errorMessage = error.message || 'error occured, you broke it retard';
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

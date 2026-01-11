@@ -8,27 +8,22 @@ export async function POST(request: Request) {
   }
 
   try {
-    const apiKey = process.env.XAI_API_KEY;
-    if (!apiKey) {
-      throw new Error('Missing XAI_API_KEY environment variable');
-    }
-
     const response = await fetch('https://api.x.ai/v1/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': `Bearer ${process.env.XAI_API_KEY}`,
         'Content-Type': 'application/json'
       },
-     body: JSON.stringify({
-  model: 'grok-2-image',
-  prompt: prompt + ' in a funny viral meme style with bold text overlay',
-  n: 1
-})
+      body: JSON.stringify({
+        model: 'grok-2-image',  // Correct xAI image model (flux is old)
+        prompt: prompt,  // Keep prompt simple - no extra text for now
+        n: 1
+        // Removed 'size' - xAI doesn't support it
       })
     });
 
     if (!response.ok) {
-      const errorText = await response.text(); // Get raw error from xAI
+      const errorText = await response.text(); // Get real xAI error message
       throw new Error(`xAI API error: ${response.status} - ${errorText}`);
     }
 

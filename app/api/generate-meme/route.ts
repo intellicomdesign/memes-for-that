@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const response = await fetch('https://api.x.ai/v1/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer xai-Ms8wi016e8pucPaW67xjNzLrA8rJPYrPDN6gpt9IeEl94pytGFMK0B5yJYC6SJwiL2N5Xu4DiEFkefrf`,
+        'Authorization': `Bearer 'Authorization': `Bearer ${process.env.XAI_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({

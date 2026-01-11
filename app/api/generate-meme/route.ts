@@ -19,11 +19,11 @@ export async function POST(request: Request) {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: 'grok-2-image',  // Correct model name for xAI image gen
-        prompt: prompt + ' in a funny viral meme style with bold text overlay',
-        n: 1,
-        size: '1024x1024'
+     body: JSON.stringify({
+  model: 'grok-2-image',
+  prompt: prompt + ' in a funny viral meme style with bold text overlay',
+  n: 1
+})
       })
     });
 

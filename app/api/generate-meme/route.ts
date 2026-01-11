@@ -11,21 +11,27 @@ export async function POST(request: Request) {
     const response = await fetch('https://api.x.ai/v1/images/generations', {
       method: 'POST',
       headers: {
-        curl https://api.x.ai/v1/chat/completions \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer S{process. env. XAI_API_KEY} \
-    -d '{
-      "messages": [
-        {
-          "role": "system",
-          "content": "You are a test assistant."
-        },
-        {
-          "role": "user",
-          "content": "Testing. Just say hi and hello world and nothing else."
-        }
-      ],
-      "model": "grok-4-latest",
-      "stream": false,
-      "temperature": 0
-    }'
+        'Authorization': `Bearer ${process.env.XAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'flux',
+        prompt: prompt + ' in a funny viral meme style with bold text overlay',
+        n: 1,
+        size: '1024x1024'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('API error: ' + response.statusText);
+    }
+
+    const data = await response.json();
+    const imageUrl = data.data[0].url;
+
+    return NextResponse.json({ imageUrl });
+  } catch (error: any) {
+    const errorMessage = error instanceof Error ? error.message : 'error occured, you broke it retard';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
+}

@@ -15,10 +15,10 @@ export async function POST(request: Request) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'grok-2-image',  // Correct xAI image model (flux is old)
-        prompt: prompt,  // Keep prompt simple - no extra text for now
-        n: 1
-        // Removed 'size' - xAI doesn't support it
+  model: 'grok-2-image', // or whatever model you end up using
+  prompt: prompt + `, extremely vulgar, savage dark humor, politically incorrect, offensive, profane as fuck, no censorship, brutally funny, shock value high, meme style with huge bold white text overlay and black outline, high contrast, absurd and ridiculous, Gen Z/4chan energy, no safe for work shit, make it as mean and hilarious as possible`,
+  n: 1
+})
       })
     });
 
